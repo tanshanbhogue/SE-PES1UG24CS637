@@ -25,6 +25,7 @@ def read_meters(xml_text):
     return [(m.get("id"), int(m.get("prev")), int(m.get("curr")))
             for m in root.findall("meter")]
 
+
 def calculate_units(previous, current):
     """Return units consumed, or 0 if the reading went backwards."""
     if current < previous:
@@ -52,7 +53,7 @@ def generate_bill(meter_id, units, tax_rate=0.05, extras=None):
     if extras is None:
         extras = {}
     amount = energy_charge(units) + FIXED_CHARGE + sum(extras.values())
-    bill = {"meter" : meter_id, "units": units,
+    bill = {"meter": meter_id, "units": units,
             "amount": round(amount * (1 + tax_rate), 2)}
     bills.append(bill)
     return bill
@@ -92,11 +93,12 @@ def main():
         generate_bill(meter_id, units)
     generate_bill("M4", 50, extras={"late_fee": 25})
     for bill in bills:
-        print(bill["meter"], "used", bill["units"], "units, bill Rs.", bill["amount"])
+        print(bill["meter"], "used", bill["units"],
+              "units, bill Rs.", bill["amount"])
     highest = max(bills, key=lambda bill: bill["amount"])
     print("Highest bill:", highest["meter"])
     print("Average bill:", average_bill())
-    total=sum(bill["amount"] for bill in bills)
+    total = sum(bill["amount"] for bill in bills)
     print("Total billed:", round(total, 2))
     save_bills()
     print("Saved", len(bills), "bills to bills.json")
